@@ -39,4 +39,6 @@ if resp.status_code == 200:
             temp[t[1]] = t[2]
         result.append(temp)
         break
+
+# Save to the json file
 json.dump(result, fp=fp)
