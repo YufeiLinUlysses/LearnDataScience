@@ -1,6 +1,5 @@
 import queue as q
-from importlib import reload
-reload(q)
+
 
 """
     nosetests -v queue_test.py
