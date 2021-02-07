@@ -9,7 +9,7 @@ import json
 
 # Set up a dictionary to convert keys
 keyDict = {
-    "Average Temperature": "AvgTemp",
+    "Average temperature": "AvgTemp",
     "Average gustspeed": "AvgGust",
     "Average humidity": "AvgHum",
     "Average dewpoint": "AvgDew",
@@ -30,6 +30,9 @@ keyDict = {
     "Maximum heat index": "maxHeat"
 }
 
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
 # Anti-UA detection: set up a headers variable for requests methods to disguise the crawler as a browser
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66'
@@ -39,7 +42,7 @@ headers = {
 # it is a get method API, requires one parameter: date
 url = "http://www.estesparkweather.net/archive_reports.php"
 params = {
-    "date": 200501
+    "date": 201012
 }
 
 # Get the website from the url
@@ -58,11 +61,30 @@ if resp.status_code == 200:
     weathers = tree.xpath("//*[@id='main-copy']/table")[:-2]
     for w in weathers:
         temp = {}
-        cur = w.xpath(".//tr")[1:-1]
-        for c in cur:
-            t = c.xpath(".//text()")
-            temp[t[1]] = t[2]
-        result.append(temp)
+        cur = w.xpath(".//tr")[:-1]
+        get = cur[0].xpath(".//text()")
+        sp = get[1].split()
+        if 'Dec' in sp:
+            temp['Day'] = int(sp[1])
+            for c in cur[1:]:
+                t = c.xpath(".//text()")
+                if t[1] == "Average temperature" or t[1] == "Average dewpoint":
+                    temp[keyDict[t[1]]] = float(t[2].strip().replace("°F", ""))
+                elif t[1] == "Average humidity":
+                    temp[keyDict[t[1]]] = float(t[2].strip().replace("%", ""))
+                elif t[1] == "Average barometer" or t[1] == "Rainfall for month" or t[1] == "Rainfall for year":
+                    temp[keyDict[t[1]]] = float(
+                        t[2].strip().replace("in.", ""))
+                elif t[1] == "Average gustspeed" or t[1] == "Average windspeed":
+                    temp[keyDict[t[1]]] = float(
+                        t[2].strip().replace("mph", ""))
+                elif t[1] == "Average direction":
+                    curr = t[2].strip().split('(')
+                    temp["AvgDir"] = curr[1].strip().replace(")","")
+                    temp["AvgDirDegree"] = float(curr[0].strip().replace("°",""))
+                else:
+                    continue
+            result.append(temp)
 
 # Save to the json file
 json.dump(result, fp=fp)

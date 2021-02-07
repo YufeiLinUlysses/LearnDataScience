@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <div id="graph1"></div>
+</body>
+<script>
+    // Initialize a svg on div graph1
+    var width = 300;
+    var height = 300;
+    var svg = d3.select("#graph1").append("svg")
+        .attr("width", width).attr("height", height)
+
+    // Similarly, we could append anything we like through this process
+    svg.append("rect")
+        .attr("id","square")
+        .attr("x", 20)
+        .attr("y", 20)
+        .attr("width", 60)
+        .attr("height", 60)
+        .attr("fill", "green")
+        .attr("transform", "translate(15 30) rotate(45)")
+ 
+    d3.select("#square").transition().duration(20000).attr("fill","rgb(200,100,100)")
+</script>
+
+</html>
