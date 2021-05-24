@@ -1,3 +1,3 @@
 from Tuple import Tuple
 
-print(Tuple.point(1,2,3))
+print(Tuple(1, 2, 3, 4))

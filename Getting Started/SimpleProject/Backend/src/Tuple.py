@@ -21,6 +21,7 @@ point
 vector
 magnitude
 dot
+cross
 """
 # ---------------------
 """  
@@ -40,11 +41,27 @@ class Tuple():
     """
     Tuple class takes in a numpy array
     arr[0] is x, arr[1] is y, arr[2] is z, arr[3] is w
+    We support two ways of input:
+    Give four double: x,y,z,w
+    Or
+    Given a numpy array
     """
     # ---------------------
 
-    def __init__(self, arr):
-        self.arr = arr
+    def __init__(self, x=None, y=None, z=None, w=None, arr=None):
+        try:
+            if arr.size != 0:
+                self.x = arr[0]
+                self.y = arr[1]
+                self.z = arr[2]
+                self.w = arr[3]
+                self.arr = arr
+        except:
+            self.x = x
+            self.y = y
+            self.z = z 
+            self.w = w 
+            self.arr = np.array([x, y, z, w])
 
     # ---------------------
     """
@@ -53,7 +70,7 @@ class Tuple():
     # ---------------------
 
     def __str__(self):
-        return "({0},{1},{2},{3})".format(self.arr[0], self.arr[1], self.arr[2], self.arr[3])
+        return "({0},{1},{2},{3})".format(self.x, self.y, self.z, self.w)
 
     # ---------------------
     """
@@ -78,7 +95,7 @@ class Tuple():
     # ---------------------
 
     def __add__(self, tuple2):
-        return Tuple(self.arr + tuple2.arr)
+        return Tuple(arr = (self.arr + tuple2.arr))
     # -----------------
     """
         Make sure you are on ~/src
@@ -103,7 +120,7 @@ class Tuple():
     # ---------------------
 
     def __sub__(self, tuple2):
-        return Tuple(self.arr - tuple2.arr)
+        return Tuple(arr = (self.arr - tuple2.arr))
     # -----------------
     """
         Make sure you are on ~/src
@@ -130,7 +147,7 @@ class Tuple():
     # ---------------------
 
     def __mul__(self, scalar):
-        return Tuple(self.arr * scalar)
+        return Tuple(arr = self.arr * scalar)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -155,7 +172,7 @@ class Tuple():
     # ---------------------
 
     def __truediv__(self, scalar):
-        return Tuple(self.arr / scalar)
+        return Tuple(arr = self.arr / scalar)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -176,7 +193,7 @@ class Tuple():
     # ---------------------
 
     def __invert__(self):
-        return Tuple(-self.arr)
+        return Tuple(arr = -self.arr)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -187,7 +204,6 @@ class Tuple():
         python -m nose -v ../test/TupleTest.py:test_negate
         ---------------------------------------------------
     """
-
 
     # ---------------------
     """
@@ -203,7 +219,7 @@ class Tuple():
     # ---------------------
     @staticmethod
     def point(x, y, z):
-        return Tuple(np.array([x, y, z, 1]))
+        return Tuple(x, y, z, 1)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -229,7 +245,7 @@ class Tuple():
     # ---------------------
     @staticmethod
     def vector(x, y, z):
-        return Tuple(np.array([x, y, z, 0]))
+        return Tuple(x, y, z, 0)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -241,7 +257,6 @@ class Tuple():
         ---------------------------------------------------
     """
 
-
     # ---------------------
     """
     Magnituude is used for discovering the distance represented by a vector
@@ -251,6 +266,7 @@ class Tuple():
         * magnitude: a scalar
     """
     # ---------------------
+
     def magnitude(self):
         return np.sqrt(sum(self.arr**2))
     """
@@ -285,7 +301,6 @@ class Tuple():
         python -m nose -v ../test/TupleTest.py:test_magnitude
         ---------------------------------------------------
     """
-
 
     # ---------------------
     """
@@ -323,7 +338,7 @@ class Tuple():
 
     def cross(self, tuple2):
         crossP = np.cross(self.arr[:-1], tuple2.arr[:-1])
-        return Tuple.vector(crossP[0],crossP[1],crossP[2])
+        return Tuple.vector(crossP[0], crossP[1], crossP[2])
     """
         Make sure you are on ~/src
         ---------------------------------------------------
