@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+setup.py
+src/example_package/__init__.py
+src/example_package/example1.py
+src/example_package/example2.py
+src/example_pkg_Ulysses_Lynne.egg-info/PKG-INFO
+src/example_pkg_Ulysses_Lynne.egg-info/SOURCES.txt
+src/example_pkg_Ulysses_Lynne.egg-info/dependency_links.txt
+src/example_pkg_Ulysses_Lynne.egg-info/top_level.txt

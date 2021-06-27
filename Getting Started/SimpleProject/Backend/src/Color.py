@@ -18,11 +18,11 @@ __mul__
 """  
     Make sure you are on ~/src
     ---------------------------------------------------
-    nosetests -v ../test/TupleTest.py
+    nosetests -v ../test/ColorTest.py
     --- OR ---- 
-    python3 -m nose -v ../test/TupleTest.py
+    python3 -m nose -v ../test/ColorTest.py
     --- OR ---- 
-    python -m nose -v ../test/TupleTest.py
+    python -m nose -v ../test/ColorTest.py
     ---------------------------------------------------
 """
 
@@ -30,19 +30,25 @@ __mul__
 class Color():
     # ---------------------
     """
-    Color class takes in a numpy array
+    Color class takes in a group of three numbers or a numpy array
     arr[0] is r, arr[1] is g, arr[2] is b
     """
     # ---------------------
 
-    def __init__(self, r=None, g=None, b=None, arr=None):
-        try:
-            if arr.size != 0:
-                self.arr = arr
-                self.r = arr[0]
-                self.g = arr[1]
-                self.b = arr[2]
-        except:
+    def __init__(self, r: float = None, g: float = None, b: float = None, arr: np.array = None):
+        if r == g == b == None:
+            try:
+                if arr.size != 0:
+                    self.arr = arr
+                    self.r = arr[0]
+                    self.g = arr[1]
+                    self.b = arr[2]
+            except:
+                self.r = 0
+                self.g = 0
+                self.b = 0
+                self.arr = np.array([0, 0, 0])
+        else:
             self.r = r
             self.g = g
             self.b = b
@@ -64,8 +70,8 @@ class Color():
     """
     # ---------------------
 
-    def __eq__(self, color2):
-        return np.allclose(self.arr, color2.arr, atol=0.00001)
+    def __eq__(self, color2: "Color"):
+        return np.allclose(self.arr, color2.arr, atol=0.0001)
 
     # ---------------------
     """
@@ -78,7 +84,7 @@ class Color():
     """
     # ---------------------
 
-    def __add__(self, color2):
+    def __add__(self, color2: "Color"):
         return Color(arr=self.arr + color2.arr)
     # -----------------
     """
@@ -102,7 +108,7 @@ class Color():
     """
     # ---------------------
 
-    def __sub__(self, color2):
+    def __sub__(self, color2: "Color"):
         return Color(arr=self.arr - color2.arr)
     # -----------------
     """
@@ -131,7 +137,7 @@ class Color():
     # ---------------------
 
     def __mul__(self, multi):
-        if type(multi) == int:
+        if type(multi) == float or type(multi) == int:
             return Color(arr=self.arr * multi)
         return Color(arr=self.arr*multi.arr)
     """

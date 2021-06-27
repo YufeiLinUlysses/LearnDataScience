@@ -22,6 +22,7 @@ vector
 magnitude
 dot
 cross
+reflectV
 """
 # ---------------------
 """  
@@ -39,7 +40,7 @@ cross
 class Tuple():
     # ---------------------
     """
-    Tuple class takes in a numpy array
+    Tuple class takes in a group of 4 numbers or a numpy array
     arr[0] is x, arr[1] is y, arr[2] is z, arr[3] is w
     We support two ways of input:
     Give four double: x,y,z,w
@@ -48,19 +49,26 @@ class Tuple():
     """
     # ---------------------
 
-    def __init__(self, x=None, y=None, z=None, w=None, arr=None):
-        try:
-            if arr.size != 0:
-                self.x = arr[0]
-                self.y = arr[1]
-                self.z = arr[2]
-                self.w = arr[3]
-                self.arr = arr
-        except:
+    def __init__(self, x: float = None, y: float = None, z: float = None, w: float = None, arr: np.array = None):
+        if x == y == z == w == None:
+            try:
+                if arr.size != 0:
+                    self.x = arr[0]
+                    self.y = arr[1]
+                    self.z = arr[2]
+                    self.w = arr[3]
+                    self.arr = arr
+            except:
+                self.x = 0
+                self.y = 0
+                self.z = 0
+                self.w = 0
+                self.arr = np.array([0, 0, 0, 0])
+        else:
             self.x = x
             self.y = y
-            self.z = z 
-            self.w = w 
+            self.z = z
+            self.w = w
             self.arr = np.array([x, y, z, w])
 
     # ---------------------
@@ -79,8 +87,10 @@ class Tuple():
     """
     # ---------------------
 
-    def __eq__(self, tuple2):
-        return np.allclose(self.arr, tuple2.arr, atol=0.00001)
+    def __eq__(self, tuple2: "Tuple"):
+        if tuple2 == None:
+            return False
+        return np.allclose(self.arr, tuple2.arr, atol=0.0001)
 
     # ---------------------
     """
@@ -94,8 +104,8 @@ class Tuple():
     """
     # ---------------------
 
-    def __add__(self, tuple2):
-        return Tuple(arr = (self.arr + tuple2.arr))
+    def __add__(self, tuple2: "Tuple"):
+        return Tuple(arr=(self.arr + tuple2.arr))
     # -----------------
     """
         Make sure you are on ~/src
@@ -119,8 +129,8 @@ class Tuple():
     """
     # ---------------------
 
-    def __sub__(self, tuple2):
-        return Tuple(arr = (self.arr - tuple2.arr))
+    def __sub__(self, tuple2: "Tuple"):
+        return Tuple(arr=(self.arr - tuple2.arr))
     # -----------------
     """
         Make sure you are on ~/src
@@ -146,8 +156,8 @@ class Tuple():
     """
     # ---------------------
 
-    def __mul__(self, scalar):
-        return Tuple(arr = self.arr * scalar)
+    def __mul__(self, scalar: float):
+        return Tuple(arr=self.arr * scalar)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -171,8 +181,8 @@ class Tuple():
     """
     # ---------------------
 
-    def __truediv__(self, scalar):
-        return Tuple(arr = self.arr / scalar)
+    def __truediv__(self, scalar: float):
+        return Tuple(arr=self.arr / scalar)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -193,7 +203,7 @@ class Tuple():
     # ---------------------
 
     def __invert__(self):
-        return Tuple(arr = -self.arr)
+        return Tuple(arr=-self.arr)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -218,7 +228,7 @@ class Tuple():
     """
     # ---------------------
     @staticmethod
-    def point(x, y, z):
+    def point(x: float, y: float, z: float):
         return Tuple(x, y, z, 1)
     """
         Make sure you are on ~/src
@@ -244,7 +254,7 @@ class Tuple():
     """
     # ---------------------
     @staticmethod
-    def vector(x, y, z):
+    def vector(x: float, y: float, z: float):
         return Tuple(x, y, z, 0)
     """
         Make sure you are on ~/src
@@ -290,6 +300,8 @@ class Tuple():
     # ---------------------
 
     def normalize(self):
+        if self.magnitude() == 0:
+            return self
         return self/self.magnitude()
     """
         Make sure you are on ~/src
@@ -307,13 +319,15 @@ class Tuple():
     Dot product is a standard way to understand the angle between two vectors, the smaller the result, the larger the angle
     It is widely used to find intersactions of rays and objects.
     Works for vector only
+    ---- Inputs: --------
+        * tuple2: a Tuple
     ---- Outputs: --------
         * dotProduct: a scalar
     """
     # ---------------------
 
-    def dot(self, tuple2):
-        return self.arr@tuple2.arr
+    def dot(self, tuple2: "Tuple"):
+        return float(self.arr@tuple2.arr)
     """
         Make sure you are on ~/src
         ---------------------------------------------------
@@ -331,12 +345,14 @@ class Tuple():
     However, given the vector has directions, and can be pointing the opposite direction
     If we have the cross product order changed then we would have the result vector pointing to the opposite direction
     Works for vector only
+    ---- Inputs: --------
+        * tuple2: a Tuple
     ---- Outputs: --------
         * crossProduct: a Tuple perpendicular to the given two vectors
     """
     # ---------------------
 
-    def cross(self, tuple2):
+    def cross(self, tuple2: "Tuple"):
         crossP = np.cross(self.arr[:-1], tuple2.arr[:-1])
         return Tuple.vector(crossP[0], crossP[1], crossP[2])
     """
@@ -347,5 +363,30 @@ class Tuple():
         python3 -m nose -v ../test/TupleTest.py:test_cross
         --- OR ---- 
         python -m nose -v ../test/TupleTest.py:test_cross
+        ---------------------------------------------------
+    """
+
+    # ---------------------
+    """
+    reflectV is used to calculate the reflected vector based on the original input 
+    and the calculated normal vector
+    Works for vector only
+    ---- Inputs: --------
+        * normal: a Tuple, the normal vector
+    ---- Outputs: --------
+        * crossProduct: a Tuple perpendicular to the given two vectors
+    """
+    # ---------------------
+
+    def reflectV(self, normal: "Tuple"):
+        return self - normal * 2 * self.dot(normal)
+    """
+        Make sure you are on ~/src
+        ---------------------------------------------------
+        nosetests -v ../test/TupleTest.py:test_reflectV
+        --- OR ---- 
+        python3 -m nose -v ../test/TupleTest.py:test_reflectV
+        --- OR ---- 
+        python -m nose -v ../test/TupleTest.py:test_reflectV
         ---------------------------------------------------
     """
